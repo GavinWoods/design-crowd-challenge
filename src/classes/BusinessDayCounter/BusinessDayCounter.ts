@@ -35,14 +35,52 @@ export class BusinessDayCounter {
     return weekdaysCount;
   }
 
+  /**
+   * Calculates the number of business days between two given dates, excluding public holidays.
+   *
+   * @param {Date} firstDate - The first date.
+   * @param {Date} secondDate - The second date.
+   * @param {Date[]} publicHolidays - An array of public holidays.
+   * @returns {number} The number of business days between the two dates.
+   */
   BusinessDaysBetweenTwoDates(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     firstDate: Date,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     secondDate: Date,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     publicHolidays: Date[],
   ): number {
-    return 0;
+    const start = dayjs(firstDate);
+    const end = dayjs(secondDate);
+
+    if (end.diff(start, "day") <= 0) return 0;
+
+    const weekdaysCount = this.WeekdaysBetweenTwoDates(
+      start.toDate(),
+      end.toDate(),
+    );
+
+    const holidaysOnWeekDays = publicHolidays.reduce((count, holiday) => {
+      const holidayDate = dayjs(holiday);
+
+      if (
+        this.IsWeekday(holidayDate) &&
+        holidayDate.isBetween(start, end, "day")
+      ) {
+        count++;
+      }
+
+      return count;
+    }, 0);
+
+    return weekdaysCount - holidaysOnWeekDays;
+  }
+
+  /**
+   * Checks if a given date is a weekday.
+   *
+   * @param {dayjs.Dayjs} date - The date to check.
+   * @return {boolean} Returns true if the given date is a weekday, otherwise false.
+   */
+  protected IsWeekday(date: dayjs.Dayjs): boolean {
+    return date.day() >= Weekday.Monday && date.day() <= Weekday.Friday;
   }
 }

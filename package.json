@@ -13,6 +13,9 @@
     "format-check": "pretty-quick --check",
     "prepare": "husky install"
   },
+  "dependencies": {
+    "dayjs": "^1.11.10"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.8",
     "@types/node": "^20.9.0",
